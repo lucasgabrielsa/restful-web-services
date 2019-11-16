@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.lucas.rest.webservices.restfulwebservices.controllers.models.User;
+import com.lucas.rest.webservices.restfulwebservices.models.User;
 
 @Component
 public class UserService {

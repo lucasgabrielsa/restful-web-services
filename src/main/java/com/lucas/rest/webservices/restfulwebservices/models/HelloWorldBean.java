@@ -1,4 +1,4 @@
-package com.lucas.rest.webservices.restfulwebservices.controllers.models;
+package com.lucas.rest.webservices.restfulwebservices.models;
 
 public class HelloWorldBean {
 	
