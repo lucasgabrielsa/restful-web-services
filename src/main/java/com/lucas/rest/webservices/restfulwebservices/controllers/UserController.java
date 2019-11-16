@@ -15,10 +15,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.lucas.rest.webservices.restfulwebservices.exceptions.UserNotFoundException;
 import com.lucas.rest.webservices.restfulwebservices.models.User;
+import com.lucas.rest.webservices.restfulwebservices.repositorys.UserRepository;
 import com.lucas.rest.webservices.restfulwebservices.services.UserService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -28,19 +30,27 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private UserRepository userRepository;
+	
 	@GetMapping("/users")
 	public List<User> findAll() {
-		return this.userService.findAll();
+//		return this.userService.findAll();
+		return this.userRepository.findAll();
 	}
 	
 	@GetMapping("/users/{id}")
 	public Resource<User> findOne(@PathVariable Integer id) {
-		User user = this.userService.findOne(id);
-		if(user == null) {
+//		User user = this.userService.findOne(id);
+		
+		Optional<User> user = this.userRepository.findById(id);
+		
+//		if(user == null) {
+		if(!user.isPresent()) {
 			throw new UserNotFoundException("Id="+ id);
 		}
 		//HATEOAS CONCEPT
-		Resource<User> resource = new Resource<User>(user);
+		Resource<User> resource = new Resource<User>(user.get());
 		ControllerLinkBuilder link = linkTo(methodOn(this.getClass()).findAll());
 		resource.add(link.withRel("findAll"));
 		
@@ -49,18 +59,24 @@ public class UserController {
 	
 	@PostMapping("/users")
 	public ResponseEntity<Object> save(@Valid @RequestBody User user) {				
-		User userSaved = this.userService.save(user);
+//		User userSaved = this.userService.save(user);
+		
+		User userSaved = this.userRepository.save(user);
+		
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userSaved.getId()).toUri(); 
 		return ResponseEntity.created(location).build();
 	}
 	
 	@DeleteMapping("/users/{id}")
 	public void delete(@PathVariable Integer id) {
-		User user = this.userService.findOne(id);
-		if(user == null) {
+//		User user = this.userService.findOne(id);
+		Optional<User> user = this.userRepository.findById(id);
+		
+		if(!user.isPresent()) {
 			throw new UserNotFoundException("Id="+ id);
 		}
-		this.userService.delete(id);	
+//		this.userService.delete(id);
+		this.userRepository.delete(user.get());
 	}
 
 }
