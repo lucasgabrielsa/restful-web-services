@@ -38,4 +38,11 @@ public class UserService {
 		return user;
 	}
 	
+	public void delete(Integer id) {
+		List<User> result = users.stream().filter(e-> e.getId().equals(id)).collect(Collectors.toList());
+		if(!result.isEmpty()) {
+			users.remove(result.get(0));
+		}
+	}
+	
 }
