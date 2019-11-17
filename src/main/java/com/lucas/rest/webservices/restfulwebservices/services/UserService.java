@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.lucas.rest.webservices.restfulwebservices.models.Post;
 import com.lucas.rest.webservices.restfulwebservices.models.User;
 
 @Component
@@ -17,9 +18,9 @@ public class UserService {
 	private static Integer counter = 0;
 	
 	static {
-		users.add(new User(1, "Adam", new Date()));
-		users.add(new User(2, "Lucas", new Date()));
-		users.add(new User(3, "Jhon", new Date()));
+		users.add(new User(1, "Adam", new Date(), new ArrayList<Post>()));
+		users.add(new User(2, "Lucas", new Date(), new ArrayList<Post>()));
+		users.add(new User(3, "Jhon", new Date(), new ArrayList<Post>()));
 		counter = 3;
 	}
 	

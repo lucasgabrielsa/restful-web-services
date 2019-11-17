@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.lucas.rest.webservices.restfulwebservices.exceptions.UserNotFoundException;
+import com.lucas.rest.webservices.restfulwebservices.models.Post;
 import com.lucas.rest.webservices.restfulwebservices.models.User;
+import com.lucas.rest.webservices.restfulwebservices.repositorys.PostRepository;
 import com.lucas.rest.webservices.restfulwebservices.repositorys.UserRepository;
 import com.lucas.rest.webservices.restfulwebservices.services.UserService;
 
@@ -31,7 +33,10 @@ public class UserController {
 	private UserService userService;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UserRepository userRepository;	
+	
+	@Autowired
+	private PostRepository postRepository;
 	
 	@GetMapping("/users")
 	public List<User> findAll() {
@@ -49,7 +54,7 @@ public class UserController {
 		if(!user.isPresent()) {
 			throw new UserNotFoundException("Id="+ id);
 		}
-		//HATEOAS CONCEPT
+		//HATEOAS CONCEPT		
 		Resource<User> resource = new Resource<User>(user.get());
 		ControllerLinkBuilder link = linkTo(methodOn(this.getClass()).findAll());
 		resource.add(link.withRel("findAll"));
@@ -77,6 +82,29 @@ public class UserController {
 		}
 //		this.userService.delete(id);
 		this.userRepository.delete(user.get());
+	}
+	
+	
+	
+	@GetMapping("/users/{id}/posts")
+	public List<Post> findPostsByUserId(@PathVariable Integer id) {
+		Optional<User> user = this.userRepository.findById(id);
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("Id="+ id);
+		}		
+		return user.get().getPosts();
+	}
+	
+	@PostMapping("/users/{id}/posts")
+	public ResponseEntity<Object> save(@RequestBody Post post, @PathVariable int id) {
+		Optional<User> user = this.userRepository.findById(id);
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("Id="+ id);
+		}	
+		post.setUser(user.get());
+		Post postSaved = this.postRepository.save(post);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("").buildAndExpand(id).toUri(); 
+		return ResponseEntity.created(location).build();		
 	}
 
 }

@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Post {
 	
@@ -17,12 +19,14 @@ public class Post {
 	private String description;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	private User user;
 	
 	public Post() {
 		
 	}
-	public Post(Integer id, String description, User user) {		
+	public Post(Integer id, String description, User user) {	
+		super();
 		this.id = id;
 		this.description = description;
 		this.user = user;
@@ -56,4 +60,5 @@ public class Post {
 	public String toString() {
 		return "Post [id=" + id + ", description=" + description + "]";
 	}
+	
 }
